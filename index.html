@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Zaebali Baera</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js" integrity="sha512-3gJwYpMe3QewGELv8k/BX9vcqhryRdzRMxVfq6ngyWXwo03GFEzjsUm8Q7RZcHPHksttq7/GFoxjCVUjkjvPdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+</head>
+<body>
+<div class="flex-container">
+	<div class="spinner"><p>
+		<div class="cube1"></div>
+		<div class="cube2"></div>
+		Loading...
+		</p>
+	</div>
+	<div class="flex-slide home">
+		<div class="flex-title flex-title-home">Залив архивов</div>
+		<div class="flex-about flex-about-home">
+					<form class="contact-form" action="zaliv-archive-api.php" method="post">
+						<p>Host IP <input type="text" name="host"></p>
+						<p>Login <input type="text" name="usr"></p>
+						<p>Password <input type="text" name="pass"></p>
+						<p style="text-align: center">Не более 10 штук за раз</p>
+						<p>Domains <textarea type="text" name="domains" row="5" placeholder="Домены из джиры сюда" required></textarea></p>
+						<p><input type="submit"  value="Отправить на залив"></p>
+					</form>
+        </div>
+	</div>
+	<div class="flex-slide about">
+		<div class="flex-title">Залив карточек</div>
+		<div class="flex-about">
+
+				<form class="contact-form" action="zaliv-archive-api.php" method="post">
+						<p>Host IP <input type="text" name="host"></p>
+						<p>Login <input type="text" name="usr"></p>
+						<p>Password <input type="text" name="pass"></p>
+						<p style="text-align: center">Не более 10 штук за раз</p>
+						<p>Domains <textarea type="text" name="domains" row="5" placeholder="Домены из джиры сюда" required></textarea></p>
+						<p><input type="submit"  value="Отправить на залив"></p>
+					</form>
+        </div>
+	</div>
+	<div class="flex-slide work">
+		<div class="flex-title">Создание поддомена</div>
+		<div class="flex-about">
+					<form class="contact-form" action="zaliv-archive-api.php" method="post">
+						<p>Host IP <input type="text" name="host"></p>
+						<p>Login <input type="text" name="usr"></p>
+						<p>Password <input type="text" name="pass"></p>
+						<p style="text-align: center">Не более 10 штук за раз</p>
+						<p>Domains <textarea type="text" name="domains" row="5" placeholder="Домены из джиры сюда" required></textarea></p>
+						<p><input type="submit"  value="Отправить на залив"></p>
+					</form>
+		</div>
+	</div>
+	<div class="flex-slide contact">
+		<div class="flex-title">Залив на поддомен</div>
+				<div class="flex-about">
+					<p style="text-align: center">Не более 10 штук за раз</p>
+				<form class="contact-form" action="zaliv-archive-api.php" method="post">
+						<p>Host IP <input type="text" name="host"></p>
+						<p>Login <input type="text" name="usr"></p>
+						<p>Password <input type="text" name="pass"></p>
+						<p style="text-align: center">Не более 10 штук за раз</p>
+						<p>Domains <textarea type="text" name="domains" row="5" placeholder="Домены из джиры сюда" required></textarea></p>
+						<p><input type="submit"  value="Отправить на залив"></p>
+					</form>
+
+		</div>
+	</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+<script src="https://s3-us-west-2.amazonaws.com/s.cdpn.io/769286/jquery.waitforimages.min.js"></script>
+<script src="main.js"></script>
+</body>
+</html>
