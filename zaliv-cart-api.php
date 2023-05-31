@@ -5,12 +5,13 @@ $curl = curl_init();
 
 
 
+$selectedValue = $_POST['select'];
 $ip_host = $_POST['host'];
 //"https://146.19.170.138:8888";
 $ip_user = $_POST['usr'];
 $ip_pass = $_POST['pass'];
 curl_setopt_array($curl, array(
-    CURLOPT_URL => $ip_host . '/login',
+    CURLOPT_URL => $ip_host.'/login',
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => '',
     CURLOPT_SSL_VERIFYHOST => 0,
@@ -31,6 +32,37 @@ $response = curl_exec($curl);
 $response = json_decode($response, true);
 $token = $response['data']['token'];
 curl_close($curl);
+
+
+
+
+
+
+
+$connect = mysqli_connect("localhost", "soft_usr", "n5eLcJ3xazRDTR1g", "soft");
+
+if ($connect == false) {
+    print("Ошибка: Невозможно подключиться к MySQL " . mysqli_connect_error());
+}
+
+if(empty($token)){
+    echo "Введите правильные данные!";
+    die();
+}
+if ($selectedValue == "default" || $selectedValue == "writeIt") {
+    $sql = "INSERT INTO Panels (IP, login, pass) VALUES ('$ip_host', '$ip_user', '$ip_pass')";
+
+    if ($connect->query($sql) === TRUE) {
+    echo "Данные успешно записаны в базу данных.";
+} else {
+    echo "Ошибка записи данных в базу данных: " . $connect->error;
+}
+}
+
+$parsed_url = parse_url($ip_host);
+$hostname = $parsed_url['host'];
+$ip = gethostbyname($hostname);
+
 
 $all_offers = $_POST['domains'];
 $new_str = str_replace("\r\n", ',', $all_offers);
@@ -55,7 +87,7 @@ foreach ($jsn_domains as $card_domain) {
         'email_domain' => false,
         'ips' => [
             [
-                "ip" => "146.19.170.138",
+                "ip" => $ip,
             ]
         ],
         'dns_domain' => null,
@@ -107,7 +139,7 @@ foreach ($jsn_domains as $card_domain) {
     $curl = curl_init();
 
     curl_setopt_array($curl, array(
-        CURLOPT_URL => 'https://146.19.170.138:8888/api/master',
+        CURLOPT_URL => $ip_host.'/api/master',
         CURLOPT_RETURNTRANSFER => true,
         CURLOPT_ENCODING => '',
         CURLOPT_SSL_VERIFYHOST => 0,
@@ -125,17 +157,43 @@ foreach ($jsn_domains as $card_domain) {
     ));
 
     $response = curl_exec($curl);
+    $response = json_decode($response, true);
+    $id_offer = $response['data']['id'];
 
     curl_close($curl);
-
     echo '<br><span style="color:green"> Домен : ';
 
-    print_r($card_domain);
+    print_r($response);
 
     print " закинулся)</span><br>";
 
-    sleep(4);
+    $curl = curl_init();
 
+curl_setopt_array($curl, array(
+  CURLOPT_URL => $ip_host.'/api/sites/'.$id_offer,
+  CURLOPT_RETURNTRANSFER => true,
+  CURLOPT_ENCODING => '',
+  CURLOPT_SSL_VERIFYHOST => 0,
+  CURLOPT_SSL_VERIFYPEER => 0,
+  CURLOPT_MAXREDIRS => 10,
+  CURLOPT_TIMEOUT => 0,
+  CURLOPT_FOLLOWLOCATION => true,
+  CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+  CURLOPT_CUSTOMREQUEST => 'PUT',
+  CURLOPT_POSTFIELDS =>'{"manual_changes":false,"index_page":"index.php index.html","sub_directory":"main"}',
+  CURLOPT_HTTPHEADER => array(
+    'Content-Type: application/json',
+    'Authorization: Bearer '.$token,
+  ),
+));
+
+$response = curl_exec($curl);
+
+curl_close($curl);
+// ///  
+echo "<pre style='color:white'>";
+echo $response;
+echo "</pre>";
 
 //Telegram
     $tsend = array(

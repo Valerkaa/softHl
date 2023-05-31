@@ -7,7 +7,7 @@
 		$(this).hover(function(){
 			$(this).find('.flex-title').css({
 				transform: 'rotate(0deg)',
-				top: '10%'
+				top: '3%'
 			});
 			$(this).find('.flex-about').css({
 				opacity: '1'

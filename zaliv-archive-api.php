@@ -2,6 +2,8 @@
 
 echo '<style>body{background:#222;text-align:center;color:white}</style>';
 $curl = curl_init();
+
+$selectedValue = $_POST['select'];
 $ip_host = $_POST['host'];
 //"https://146.19.170.138:8888";
 $ip_user = $_POST['usr'];
@@ -24,10 +26,39 @@ curl_setopt_array($curl, array(
 ));
 
 
+
+
 $response = curl_exec($curl);
 $response = json_decode($response, true);
 $token = $response['data']['token'];
 curl_close($curl);
+
+
+
+
+$connect = mysqli_connect("localhost", "soft_usr", "n5eLcJ3xazRDTR1g", "soft");
+
+if ($connect == false) {
+    print("Ошибка: Невозможно подключиться к MySQL " . mysqli_connect_error());
+}
+
+if(empty($token)){
+    echo "Введите правильные данные!";
+    die();
+}
+if ($selectedValue == "default" || $selectedValue == "writeIt") {
+    $sql = "INSERT INTO Panels (IP, login, pass) VALUES ('$ip_host', '$ip_user', '$ip_pass')";
+
+    if ($connect->query($sql) === TRUE) {
+    echo "Данные успешно записаны в базу данных.";
+} else {
+    echo "Ошибка записи данных в базу данных: " . $connect->error;
+}
+}
+
+
+
+
 
 
 $all_offers = $_POST['domains'];
@@ -40,14 +71,11 @@ foreach ($jsn_domains as $archive_to_domain){
 
 
 $archive_to_domain = trim($archive_to_domain,'"');
-echo '<span style="color:pink"> Работа по домену: '.$archive_to_domain;
 
-
-print "</span><br>";
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-    CURLOPT_URL => $ip_host.'/api/sites/list?filter[type]=all&filter[order]=date&filter[offset]=0&filter[limit]=20&filter[query]='.$archive_to_domain,
+    CURLOPT_URL => $ip_host.'/api/sites/simple',
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_ENCODING => '',
     CURLOPT_SSL_VERIFYHOST => 0,
@@ -67,11 +95,8 @@ curl_setopt_array($curl, array(
 
 $response = curl_exec($curl);
 $response = json_decode($response, true);
-$id_offer = $response['data'][0]['id'];
 
-$path_offer = $response['data'][0]['index_dir'];
-$name_folder = $response['data'][0]['domain'];
-$main_path = trim($path_offer,$name_folder);
+
 
 
 
@@ -80,11 +105,29 @@ sleep(1);
 
 
 
+
+foreach ($response['data'] as $i){
+    if($i['domain'] == $archive_to_domain){
+        $id_offer = $i['id'];
+        $path_offer = $i['index_dir'];
+        $name_folder = $i['domain'];
+        $main_path = $path_offer;
+    }
+}
+
+echo '<span style="color:pink"> Работа по домену: '.$archive_to_domain;
+
+print "</span><br>";
+
+
+
+
+
 $curl = curl_init();
 $data_path = [
  'files' => [
      [
-     "path" => $path_offer,
+     "path" => $path_offer."/main",
      ]
  ]
 ];
@@ -117,7 +160,7 @@ sleep(2);
 
 $data = [
  'folder' => [
-     "name" => $name_folder,
+     "name" => "main",
      "path" => $main_path,
  ]
 
@@ -151,16 +194,28 @@ curl_close($curl);
 
 
 
-$filepath = "archive.zip";
 
 
 
+      $target_file = basename($_FILES["fileToUpload"]["name"]);
+
+      if (move_uploaded_file($_FILES["fileToUpload"]["tmp_name"], $target_file)) {
+       echo "The file ". basename( $_FILES["fileToUpload"]["name"]). " has been uploaded.";
+       $fileName = basename( $_FILES["fileToUpload"]["name"]);
+       $fileString = strval($fileName);
+      } else{
+         echo "Sorry, there was an error uploading your file.";
+      }
+    
+
+$filepath = $fileString;
 $curlFile = new CURLFile(realpath($filepath));
+
 
 $curl = curl_init();
 
 curl_setopt_array($curl, array(
-  CURLOPT_URL => $ip_host.'/api/files/upload?file='.$filepath.'&site='.$id_offer.'&path='.$path_offer,
+  CURLOPT_URL => $ip_host.'/api/files/upload?file='.$filepath.'&site='.$id_offer.'&path='.$path_offer."/main",
   CURLOPT_RETURNTRANSFER => true,
   CURLOPT_ENCODING => '',
   CURLOPT_SSL_VERIFYHOST => 0,
@@ -181,6 +236,15 @@ $response = curl_exec($curl);
 
 curl_close($curl);
 
+
+
+
+
+
+
+
+
+
 echo '<br><span style="color:green"> Доставлен : ';
 
 print_r($filepath);
@@ -189,7 +253,7 @@ print "</span><br>";
 
 
 
-$archive_path = $path_offer."/archive.zip";
+$archive_path = $path_offer."/main/".$filepath;
 
 
 sleep(3);
@@ -230,7 +294,7 @@ print "</span><br>";
 $data = [
     'files' =>[
         "0" =>[
-        "path" => $main_path.$archive_to_domain."/archive.zip",
+        "path" => $main_path."/main/".$filepath,
         ]
         ]
     ];
